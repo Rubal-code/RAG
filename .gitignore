@@ -1,0 +1,122 @@
+# ==============================
+# Python
+# ==============================
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==============================
+# Virtual Environment
+# ==============================
+
+venv/
+.venv/
+env/
+ENV/
+
+# ==============================
+# Environment Variables / Secrets
+# ==============================
+
+.env
+.env.*
+!.env.example
+
+# ==============================
+# IDE / Editors
+# ==============================
+
+.vscode/
+.idea/
+*.code-workspace
+
+# ==============================
+# Jupyter Notebook
+# ==============================
+
+.ipynb_checkpoints/
+
+# ==============================
+# RAG / Vector Database
+# ==============================
+
+chroma_db/
+vector_db/
+vectordb/
+*.faiss
+*.pkl
+
+# ==============================
+# Data Files
+# ==============================
+
+data/raw/
+data/processed/
+
+# Ignore large uploaded documents
+*.pdf
+*.docx
+*.xlsx
+*.csv
+
+# If you want to keep the folders in Git
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# ==============================
+# Logs
+# ==============================
+
+logs/
+*.log
+
+# ==============================
+# Testing / Coverage
+# ==============================
+
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ==============================
+# Build / Distribution
+# ==============================
+
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==============================
+# OS Files
+# ==============================
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# ==============================
+# Temporary Files
+# ==============================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# ==============================
+# Local Configuration
+# ==============================
+
+config.local.yaml
+config.local.yml
