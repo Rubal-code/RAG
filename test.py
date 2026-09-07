@@ -3,6 +3,7 @@ from src.chunking.chunker import create_chunks
 from src.embeddings.embedder import Embedder
 from src.vectordb.vector_store import VectorStore
 from src.generation.prompt import build_prompt
+from src.generation.llm import LLM
 
 
 # ============================================================
@@ -42,7 +43,7 @@ vector_store = VectorStore()
 
 
 # ============================================================
-# 5. STORE CHUNKS + EMBEDDINGS IN CHROMADB
+# 5. STORE DOCUMENTS
 # ============================================================
 
 vector_store.add_documents(
@@ -54,7 +55,7 @@ print("Documents added to ChromaDB!")
 
 
 # ============================================================
-# 6. USER QUERY
+# 6. USER QUESTION
 # ============================================================
 
 query = "What technologies and skills does Bobby Kumar have?"
@@ -64,7 +65,7 @@ print(query)
 
 
 # ============================================================
-# 7. CREATE EMBEDDING FOR THE QUERY
+# 7. EMBED USER QUESTION
 # ============================================================
 
 query_embedding = embedder.embed([query])
@@ -73,7 +74,7 @@ print("\nQuery embedding shape:", query_embedding.shape)
 
 
 # ============================================================
-# 8. SEARCH CHROMADB
+# 8. RETRIEVE RELEVANT CHUNKS
 # ============================================================
 
 results = vector_store.search(
@@ -83,7 +84,7 @@ results = vector_store.search(
 
 
 # ============================================================
-# 9. DISPLAY RETRIEVED DOCUMENTS
+# 9. GET RETRIEVED DOCUMENTS
 # ============================================================
 
 print("\n===== SEARCH RESULTS =====")
@@ -95,8 +96,6 @@ for i, document in enumerate(results["documents"][0]):
     print(f"\n--- Result {i + 1} ---")
     print(document)
 
-    # Save the retrieved document
-    # so we can use it as context later
     retrieved_documents.append(document)
 
 
@@ -110,9 +109,22 @@ prompt = build_prompt(
 )
 
 
-# ============================================================
-# 11. DISPLAY AUGMENTED PROMPT
-# ============================================================
-
 print("\n===== AUGMENTED PROMPT =====")
 print(prompt)
+
+
+# ============================================================
+# 11. GENERATE ANSWER
+# ============================================================
+
+llm = LLM()
+
+answer = llm.generate(prompt)
+
+
+# ============================================================
+# 12. DISPLAY FINAL ANSWER
+# ============================================================
+
+print("\n===== FINAL ANSWER =====")
+print(answer)
