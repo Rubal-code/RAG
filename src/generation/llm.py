@@ -10,9 +10,18 @@ load_dotenv()
 
 class LLM:
 
-    def __init__(self):
+    def __init__(
+        self,
+        model,
+        provider,
+        max_tokens=300,
+        temperature=0.2
+    ):
+        """
+        Create the Hugging Face LLM client.
+        """
 
-        # Get Hugging Face token
+        # Get HF token from .env
         hf_token = os.getenv("HF_TOKEN")
 
         if not hf_token:
@@ -20,21 +29,23 @@ class LLM:
                 "HF_TOKEN is not set. Check your .env file."
             )
 
-        # Explicitly use the Featherless AI provider.
-        # We are doing this because your live model check
-        # showed Qwen/Qwen2.5-7B-Instruct is available there.
+        # Hugging Face client
         self.client = InferenceClient(
-            provider="featherless-ai",
+            provider=provider,
             api_key=hf_token
         )
 
-        # Verified from your live model list
-        self.model = "Qwen/Qwen2.5-7B-Instruct"
+        # Generation settings
+        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
 
 
     def generate(self, prompt):
+        """
+        Generate an answer using the LLM.
+        """
 
-        # Send the RAG prompt to the LLM
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
@@ -43,9 +54,8 @@ class LLM:
                     "content": prompt
                 }
             ],
-            max_tokens=300,
-            temperature=0.2
+            max_tokens=self.max_tokens,
+            temperature=self.temperature
         )
 
-        # Extract the generated answer
         return response.choices[0].message.content

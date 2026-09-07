@@ -1,0 +1,21 @@
+pdf_path: "data/sample.pdf"
+
+chunking:
+  chunk_size: 500
+  overlap: 100
+
+embedding:
+  model: "all-MiniLM-L6-v2"
+
+retrieval:
+  top_k: 3
+
+generation:
+  model: "Qwen/Qwen2.5-7B-Instruct"
+  provider: "featherless-ai"
+  max_tokens: 300
+  temperature: 0.2
+
+vector_db:
+  path: "data/chroma_db"
+  collection_name: "documents"

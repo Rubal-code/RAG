@@ -1,3 +1,5 @@
+from src.config import load_config
+
 from src.ingestion.loader import load_pdf
 from src.chunking.chunker import create_chunks
 from src.embeddings.embedder import Embedder
@@ -7,10 +9,19 @@ from src.generation.llm import LLM
 
 
 # ============================================================
+# LOAD CONFIG
+# ============================================================
+
+config = load_config()
+
+print("Configuration loaded successfully!")
+
+
+# ============================================================
 # 1. LOAD PDF
 # ============================================================
 
-text = load_pdf("data/sample.pdf")
+text = load_pdf(config["pdf_path"])
 
 print("PDF loaded successfully!")
 
@@ -19,7 +30,11 @@ print("PDF loaded successfully!")
 # 2. CREATE CHUNKS
 # ============================================================
 
-chunks = create_chunks(text)
+chunks = create_chunks(
+    text,
+    chunk_size=config["chunking"]["chunk_size"],
+    overlap=config["chunking"]["overlap"]
+)
 
 print("Number of chunks:", len(chunks))
 
@@ -28,7 +43,9 @@ print("Number of chunks:", len(chunks))
 # 3. CREATE EMBEDDINGS
 # ============================================================
 
-embedder = Embedder()
+embedder = Embedder(
+    model_name=config["embedding"]["model"]
+)
 
 embeddings = embedder.embed(chunks)
 
@@ -39,7 +56,10 @@ print("Embedding shape:", embeddings.shape)
 # 4. CREATE VECTOR STORE
 # ============================================================
 
-vector_store = VectorStore()
+vector_store = VectorStore(
+    path=config["vector_db"]["path"],
+    collection_name=config["vector_db"]["collection_name"]
+)
 
 
 # ============================================================
@@ -51,11 +71,11 @@ vector_store.add_documents(
     embeddings
 )
 
-print("Documents added to ChromaDB!")
+print("Documents upserted to ChromaDB!")
 
 
 # ============================================================
-# 6. USER QUESTION
+# 6. QUERY
 # ============================================================
 
 query = "What technologies and skills does Bobby Kumar have?"
@@ -65,7 +85,7 @@ print(query)
 
 
 # ============================================================
-# 7. EMBED USER QUESTION
+# 7. EMBED QUERY
 # ============================================================
 
 query_embedding = embedder.embed([query])
@@ -74,12 +94,12 @@ print("\nQuery embedding shape:", query_embedding.shape)
 
 
 # ============================================================
-# 8. RETRIEVE RELEVANT CHUNKS
+# 8. RETRIEVE
 # ============================================================
 
 results = vector_store.search(
     query_embedding,
-    n_results=3
+    n_results=config["retrieval"]["top_k"]
 )
 
 
@@ -100,7 +120,7 @@ for i, document in enumerate(results["documents"][0]):
 
 
 # ============================================================
-# 10. BUILD AUGMENTED PROMPT
+# 10. BUILD PROMPT
 # ============================================================
 
 prompt = build_prompt(
@@ -108,22 +128,31 @@ prompt = build_prompt(
     retrieved_documents
 )
 
-
 print("\n===== AUGMENTED PROMPT =====")
 print(prompt)
 
 
 # ============================================================
-# 11. GENERATE ANSWER
+# 11. CREATE LLM
 # ============================================================
 
-llm = LLM()
+llm = LLM(
+    model=config["generation"]["model"],
+    provider=config["generation"]["provider"],
+    max_tokens=config["generation"]["max_tokens"],
+    temperature=config["generation"]["temperature"]
+)
+
+
+# ============================================================
+# 12. GENERATE ANSWER
+# ============================================================
 
 answer = llm.generate(prompt)
 
 
 # ============================================================
-# 12. DISPLAY FINAL ANSWER
+# 13. FINAL ANSWER
 # ============================================================
 
 print("\n===== FINAL ANSWER =====")
